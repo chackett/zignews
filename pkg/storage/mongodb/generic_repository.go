@@ -162,7 +162,7 @@ func (gr *GenericRepository) Disconnect(ctx context.Context) error {
 func (gr *GenericRepository) createIndexes() error {
 	// Bootstrap the Mongo DB repo here. This is very much an afterthought and needs its own home.
 	models := mongo.IndexModel{
-		Keys:    bson.D{{"guid", 1}},
+		Keys:    bson.D{{Key: "guid", Value: 1}},
 		Options: options.Index().SetName("guid").SetUnique(true),
 	}
 	opts := options.CreateIndexes().SetMaxTime(2 * time.Second)
