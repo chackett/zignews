@@ -1,0 +1,36 @@
+version: '3.8'
+services:
+    # aggregator:
+    #     build:
+    #         context: ./
+    #         dockerfile: ./Docker/aggregator/Dockerfile
+    mobile-api:
+        build:
+            context: ./
+            dockerfile: ./Docker/mobile-api/Dockerfile
+        ports:
+            - "8080:8080"
+    cache:
+        container_name: zignews-redis
+        image: redis:6.0.9
+        ports:
+            - '6379:6379'
+    db:
+        container_name: zignews-mg
+        image: mongo:3.6
+        environment:
+            MONGO_INITDB_ROOT_USERNAME: root
+            MONGO_INITDB_ROOT_PASSWORD: password
+        ports:
+            - '27017:27017'
+        volumes:
+            - database-data:/data/db
+    queue:
+        container_name: zignews-nats
+        image: nats:2.1.8
+        ports:
+            - '4222:4222'
+            - '6222:6222'
+            - '8222:8222'
+volumes:
+    database-data:
