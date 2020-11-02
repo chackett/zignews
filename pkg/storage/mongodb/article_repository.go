@@ -5,6 +5,7 @@ import (
 
 	"github.com/chackett/zignews/pkg/storage"
 	"github.com/pkg/errors"
+	"go.mongodb.org/mongo-driver/bson"
 )
 
 const collectionArticles = "articles"
@@ -37,11 +38,22 @@ func (pr *ArticleRepository) InsertArticles(ctx context.Context, articles []stor
 		artIface = append(artIface, article)
 	}
 
-	articleIDs, err := pr.generic.InsertDocuments(ctx, collectionArticles, artIface)
-	if err != nil {
-		return nil, errors.Wrap(err, "generic insert document")
+	// _, err := pr.generic.InsertDocuments(ctx, collectionArticles, artIface)
+	// if err != nil {
+	// 	return nil, errors.Wrap(err, "generic insert document")
+	// }
+
+	for _, art := range articles {
+		filter := &bson.M{
+			"guid": art.GUID,
+		}
+		_, err := pr.generic.UpsertDocument(ctx, collectionArticles, art, filter)
+		if err != nil {
+			return nil, errors.Wrap(err, "generic insert document")
+		}
 	}
-	return articleIDs, nil
+
+	return nil, nil
 }
 
 // GetArticles returns a collection of article
