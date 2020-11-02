@@ -65,7 +65,9 @@ func (j *Job) Stop() {
 // BuildJobs take an instance of `storage.ProviderRepository` and will return a slice of `Job`
 // based on all valid providers that are available
 func BuildJobs(provRepo storage.ProviderRepository, artRepo storage.ArticleRepository) ([]Job, error) {
-	providers, err := provRepo.GetProviders(context.Background())
+	offset := 0
+	count := 99999
+	providers, err := provRepo.GetProviders(context.Background(), offset, count)
 	if err != nil {
 		return nil, errors.Wrap(err, "get providers")
 	}
