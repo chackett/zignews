@@ -6,5 +6,5 @@ type Config struct {
 	MongoDatabase string `env:"MG_DATABASE" envDefault:"zignews"`
 	MongoUser     string `env:"MG_USER" envDefault:"root"`
 	MongoPass     string `env:"MG_PASS" envDefault:"password"`
-	APIAddress    string `env:"API_ADDR" envDefault:"127.0.0.1:8080"`
+	APIAddress    string `env:"API_ADDR" envDefault:":8080"`
 }
