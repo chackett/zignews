@@ -20,5 +20,5 @@ type Article struct {
 // ArticleRepository defines functionality to CRUD articles in underlying store
 type ArticleRepository interface {
 	InsertArticles(ctx context.Context, p []Article) ([]string, error)
-	GetArticles(ctx context.Context, offset, count int) ([]Article, error)
+	GetArticles(ctx context.Context, offset, count int, category, provider []string) ([]Article, error)
 }

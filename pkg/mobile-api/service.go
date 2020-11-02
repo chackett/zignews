@@ -55,7 +55,7 @@ func (s *ServiceImpl) GetArticles(ctx context.Context, offset, count int, catego
 		offset = defaultOffset
 	}
 
-	articles, err := s.articles.GetArticles(ctx, offset, count)
+	articles, err := s.articles.GetArticles(ctx, offset, count, category, provider)
 	if err != nil {
 		return nil, errors.Wrap(err, "get articles from repository")
 	}
@@ -79,7 +79,7 @@ func (s *ServiceImpl) SaveProvider(ctx context.Context, provider storage.Provide
 	// If the poll frequency is invalid we don't want to use default and result in unexpected behaviour by the operator.
 	// Better to let them know.
 	if provider.PollFrequencySeconds < minPollFrequencySeconds || provider.PollFrequencySeconds > maxPollFrequencySeconds {
-		return "", fmt.Errorf("Invalid polling frequency, %f seconds. Must be inside range %d-%d", provider.PollFrequencySeconds, minPollFrequencySeconds, maxPollFrequencySeconds)
+		return "", fmt.Errorf("Invalid polling frequency, %d seconds. Must be inside range %d-%d", provider.PollFrequencySeconds, minPollFrequencySeconds, maxPollFrequencySeconds)
 	}
 
 	providerID, err := s.providers.InsertProviders(ctx, []storage.Provider{provider})
