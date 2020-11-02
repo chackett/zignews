@@ -15,5 +15,5 @@ type Provider struct {
 // ProviderRepository defines functionality to CRUD providers in underlying store
 type ProviderRepository interface {
 	InsertProviders(ctx context.Context, p []Provider) ([]string, error)
-	GetProviders(ctx context.Context) ([]Provider, error)
+	GetProviders(ctx context.Context, offset, count int) ([]Provider, error)
 }

@@ -44,9 +44,9 @@ func (pr *ProviderRepository) InsertProviders(ctx context.Context, providers []s
 }
 
 // GetProviders returns a collection of providers
-func (pr *ProviderRepository) GetProviders(ctx context.Context) ([]storage.Provider, error) {
+func (pr *ProviderRepository) GetProviders(ctx context.Context, offset, count int) ([]storage.Provider, error) {
 	var results []storage.Provider
-	err := pr.generic.GetCollection(ctx, collectionProviders, &results)
+	err := pr.generic.GetCollection(ctx, collectionProviders, &results, offset, count)
 	if err != nil {
 		return nil, errors.Wrap(err, "generic get collection")
 	}

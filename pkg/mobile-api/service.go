@@ -55,7 +55,7 @@ func (s *ServiceImpl) GetArticles(ctx context.Context, offset, count int, catego
 		offset = defaultOffset
 	}
 
-	articles, err := s.articles.GetArticles(ctx)
+	articles, err := s.articles.GetArticles(ctx, offset, count)
 	if err != nil {
 		return nil, errors.Wrap(err, "get articles from repository")
 	}

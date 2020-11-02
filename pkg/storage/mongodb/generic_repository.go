@@ -47,15 +47,14 @@ func NewGenericRepository(connection, user, password, dbName string) (GenericRep
 }
 
 // GetCollection returns a named collection
-func (gr *GenericRepository) GetCollection(ctx context.Context, collection string, results interface{}) error {
+func (gr *GenericRepository) GetCollection(ctx context.Context, collection string, results interface{}, offset, count int) error {
 	coll := gr.database.Collection(collection)
 	if coll == nil {
 		return fmt.Errorf("unable to get collection handler for %s", collection)
 	}
 
 	filter := bson.D{{}}
-	options := options.Find()
-	options.SetLimit(100) // #Hack - Magic number, hardcoded for now.
+	options := options.Find().SetSkip(int64(offset * count)).SetLimit(int64(count))
 
 	crs, err := coll.Find(ctx, filter, options)
 	if err != nil {

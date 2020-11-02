@@ -57,11 +57,11 @@ func (pr *ArticleRepository) InsertArticles(ctx context.Context, articles []stor
 }
 
 // GetArticles returns a collection of article
-func (pr *ArticleRepository) GetArticles(ctx context.Context) ([]storage.Article, error) {
+func (pr *ArticleRepository) GetArticles(ctx context.Context, offset, count int) ([]storage.Article, error) {
 	var results []storage.Article
-	err := pr.generic.GetCollection(ctx, collectionArticles, &results)
+	err := pr.generic.GetCollection(ctx, collectionArticles, &results, offset, count)
 	if err != nil {
 		return nil, errors.Wrap(err, "generic get collection")
 	}
-	return nil, nil
+	return results, nil
 }
