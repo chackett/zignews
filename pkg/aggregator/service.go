@@ -23,23 +23,25 @@ func NewAggregator(jobs []Job, delayStarts bool) (Aggregator, error) {
 // Start starts the aggregation jobs
 func (a *Aggregator) Start() {
 	log.Print("Starting Aggregator")
-	for _, j := range a.jobs {
+	for i := range a.jobs {
+		job := a.jobs[i]
 		if delay := a.delay(); delay > 0 {
-			log.Printf("Starting job `%s` in %s", j.Label, delay)
+			log.Printf("Starting job `%s` in %s", job.Label, delay)
 			time.Sleep(delay)
 		}
 
-		err := j.Start()
-		if err != nil {
-			log.Printf("ERROR: Starting job `%s`. Error=%s", j.Label, err.Error())
-		} else {
-			log.Printf("Started job: `%s`", j.Label)
-		}
+		go func() {
+			err := job.Start()
+			if err != nil {
+				log.Printf("ERROR: Starting job `%s`. Error=%s", job.Label, err.Error())
+			}
+		}()
 	}
 }
 
 // Stop stops the aggregation jobs
 func (a *Aggregator) Stop() {
+	log.Print("Aggregator stopping")
 	for _, j := range a.jobs {
 		j.Stop()
 	}

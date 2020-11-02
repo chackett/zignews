@@ -5,6 +5,7 @@ import (
 	"log"
 	"time"
 
+	mobileapi "github.com/chackett/zignews/pkg/mobile-api"
 	"github.com/chackett/zignews/pkg/rssprovider"
 	"github.com/chackett/zignews/pkg/storage"
 	"github.com/pkg/errors"
@@ -39,18 +40,18 @@ func (j *Job) Start() error {
 	for {
 		select {
 		case <-j.chStop:
+			log.Printf("Stopping job: %s", j.Label)
 			return nil
 		default:
 			latest, err := j.provider.Latest()
 			if err != nil {
 				log.Print(errors.Wrapf(err, "%s - get latest - %s", j.Label, err.Error()))
 			}
-			log.Printf("Received %d articles", len(latest))
-			// articleIDs, err := j.articleRepo.InsertArticles(context.Background(), latest)
-			// if err != nil {
-			// 	log.Printf("ERROR: Saving articles - Job: %s Error: %s", j.Label, err.Error())
-			// }
-			// log.Printf("Inserted articles with IDs: %s", articleIDs)
+			log.Printf("%s - Received %d articles", j.Label, len(latest))
+			_, err = j.articleRepo.InsertArticles(context.Background(), latest)
+			if err != nil {
+				log.Printf("ERROR: Saving articles - Job: %s Error: %s", j.Label, err.Error())
+			}
 			time.Sleep(j.provider.PollingFrequency())
 		}
 	}
@@ -72,21 +73,24 @@ func BuildJobs(provRepo storage.ProviderRepository, artRepo storage.ArticleRepos
 	var result []Job
 
 	for _, prov := range providers {
-		if mobileapi.SupportedProviders
-		if prov.Type != "rss" {
-
-			// Quick hack as rss is the only supported now
+		if _, ok := mobileapi.SupportedProviders[prov.Type]; !ok {
+			log.Printf("Skipping provider `%s` - type `%s` not supported", prov.Label, prov.Type)
 			continue
 		}
+
+		// A hack, creating RSS provider as I know only RSS is supported - Need to make this dynamic when others are supported.
+		// Will use the supported providers map to expose a factory function.
 
 		pollingFrequency := time.Duration(time.Second * time.Duration(prov.PollFrequencySeconds))
 		p, err := rssprovider.NewRSSProvider(prov.Label, prov.FeedURL, pollingFrequency)
 		if err != nil {
 			log.Printf("ERROR: Unable to create RSSProvider - %s", err.Error())
+			continue
 		}
 		j, err := NewJob(p.Label, p, artRepo)
 		if err != nil {
 			log.Printf("ERROR: Unable to create new Job - %s", err.Error())
+			continue
 		}
 		result = append(result, j)
 	}

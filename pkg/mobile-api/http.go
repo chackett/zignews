@@ -69,7 +69,7 @@ func (h *Handler) Start() error {
 	if err != nil {
 		fmt.Println(err.Error())
 	}
-	return nil //errors.Wrap(h.server.ListenAndServe(), "server ListenAndServer()")
+	return nil
 }
 
 // Stop stops the underlying http server
