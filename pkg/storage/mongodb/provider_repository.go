@@ -3,6 +3,7 @@ package mongodb
 import (
 	"context"
 	"fmt"
+	"log"
 
 	"github.com/chackett/zignews/pkg/storage"
 	"github.com/pkg/errors"
@@ -38,6 +39,8 @@ func NewProviderRepository(connection, user, password, dbName string) (*Provider
 		client:   _client,
 		database: _database,
 	}
+
+	result.bootStrapProviders()
 
 	return result, nil
 }
@@ -87,4 +90,37 @@ func (pr *ProviderRepository) GetProviders(ctx context.Context, offset, count in
 	}
 
 	return nil, nil
+}
+
+func (pr *ProviderRepository) bootStrapProviders() {
+	providers := []storage.Provider{
+		{
+			Type:                 "rss",
+			FeedURL:              "http://feeds.bbci.co.uk/news/uk/rss.xml",
+			Label:                "BBC News UK",
+			PollFrequencySeconds: 10,
+		},
+		{
+			Type:                 "rss",
+			FeedURL:              "http://feeds.bbci.co.uk/news/technology/rss.xml",
+			Label:                "BBC News Technology",
+			PollFrequencySeconds: 10,
+		},
+		{
+			Type:                 "rss",
+			FeedURL:              "http://feeds.skynews.com/feeds/rss/uk.xml",
+			Label:                "Sky News UK",
+			PollFrequencySeconds: 10,
+		},
+		{
+			Type:                 "rss",
+			FeedURL:              "http://feeds.skynews.com/feeds/rss/technology.xml",
+			Label:                "Sky News Technology",
+			PollFrequencySeconds: 10,
+		},
+	}
+	_, err := pr.InsertProviders(context.Background(), providers)
+	if err != nil {
+		log.Fatal(errors.Wrap(err, "bootstrap providers"))
+	}
 }
