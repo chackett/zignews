@@ -62,6 +62,7 @@ func (r *RSSProvider) Latest() ([]storage.Article, error) {
 			Link:        item.Link,
 			Published:   published,
 			Thumbnail:   imgURL,
+			Provider:    r.Label,
 		}
 		result = append(result, a)
 	}

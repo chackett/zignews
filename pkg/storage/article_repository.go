@@ -14,6 +14,7 @@ type Article struct {
 	GUID        string    `json:"guid,omitempty"`
 	Thumbnail   string    `json:"thumbnail,omitempty"`
 	Categories  []string  `json:"categories,omitempty"`
+	Provider    string    `json:"provider,omitempty"`
 }
 
 // ArticleRepository defines functionality to CRUD articles in underlying store
