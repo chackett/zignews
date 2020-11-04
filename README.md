@@ -6,11 +6,11 @@ A news aggregator service. This tool will aggregate news articles from various s
 
 ## High level function
 
-* Aggregator polls list of pre-defined news sites and saves the article meta data to database.
+* Aggregator polls list of pre-defined news sites (providers) and saves the article meta data to database.
 * Mobile API reads the article data from database and provides them to clients in a single streamlined API.
-* PostgresSQL database stores both the articles and the configuration for application such as news sites, poll frequency, ttl for cache.
-* Memcached will cachce API calls from clients so new queries are not executed for each client API call.
-* The intention is to create an event based system. For example, the aggregator could send `new_article` for a specific provider, which might invalidate cached items. If a new news provider is provided, it could send an event for the aggregator to pick it up.
+* MongoDB database stores both the articles and provider configuration such as feed URLs, poll frequency, ttl for cache etc.
+* Redis will cache API calls from clients so new queries are not executed for each client API call.
+* The intention is to create an event based system. For example, the aggregator could send `new_article` for a specific provider, which might invalidate cached items. If a new provider is provided via API, it could send an event for the aggregator to pick it up and start a new job for that provider.
 
 ## Known issues / Design notes
 
@@ -25,10 +25,15 @@ Went for a mono repo here that hosts a full "system"
 
 * _root_ - hold some meta/build files etc.
 * `cmd` - entrypoints to launch the various services.
+* `Docker` - Store multiple docker files.
 * `pkg` - main implementation files. Typically, re-usable packages and since this is a monorepo, there is a package that matches each executable (cmd) holding main implementation for that "service".
   * `aggregator` - Implementation of the news aggregator.
   * `mobile-api` - Implementation of mobile api service.
   * `storage` - Persistence implementation. Think cache, db, memory etc.
+  * `rssprovider` - Implementation of `NewsProvider` that consumes RSS feeds.
+  * `news` - A lightweight implementation for CRUDing news related information. Would ordinarily be it's own service and be single point of access to the database.
+  * `cache` - Implement caching.
+  * `events` - Implement event messaging and signalling between components.
 
 ## Tech stack
 
@@ -38,6 +43,12 @@ Went for a mono repo here that hosts a full "system"
 * [Redis](https://redis.io) v6.0.9 - Caching
 * [Docker](https://docker.com) v19.03.13- Containerisation
 
-## Library choice
+## Libraries used
 
-* RSS
+* [Gofeed](github.com/mmcdole/gofeed) - RSS Parser
+* [Gorilla Mux](https://github.com/gorilla/mux) - Power HTTP router
+* [Mongo-Driver](https://github.com/mongodb/mongo-go-driver) - Official MongoDB Go driver
+* [Env](https://github.com/caarlos0/env) - Envar parser
+* [Go-Redis](https://github.com/go-redis/redis) - Official Redis Go client
+* [Nats.go](https://github.com/nats-io/nats.go) - Official NATS Go client
+* [Errors](https://github.com/pkg/errors) - Great package for exposing errors
