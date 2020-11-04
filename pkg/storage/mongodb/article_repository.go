@@ -101,7 +101,10 @@ func (pr *ArticleRepository) GetArticles(ctx context.Context, offset, count int,
 		}
 	}
 	options := options.Find().SetSkip(int64(offset * count)).SetLimit(int64(count))
-
+	sort := bson.M{
+		"published": -1, // -1 is descening (newest first)
+	}
+	options.SetSort(sort)
 	crs, err := coll.Find(ctx, filter, options)
 	if err != nil {
 		return nil, errors.Wrap(err, "execute find query")
