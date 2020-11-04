@@ -6,7 +6,7 @@ A news aggregator service. This tool will aggregate news articles from various s
 
 ## High level function
 
-* Aggegator polls list of pre-defined news sites and saves the article meta data to database.
+* Aggregator polls list of pre-defined news sites and saves the article meta data to database.
 * Mobile API reads the article data from database and provides them to clients in a single streamlined API.
 * PostgresSQL database stores both the articles and the configuration for application such as news sites, poll frequency, ttl for cache.
 * Memcached will cachce API calls from clients so new queries are not executed for each client API call.
@@ -26,7 +26,7 @@ Went for a mono repo here that hosts a full "system"
 * _root_ - hold some meta/build files etc.
 * `cmd` - entrypoints to launch the various services.
 * `pkg` - main implementation files. Typically, re-usable packages and since this is a monorepo, there is a package that matches each executable (cmd) holding main implementation for that "service".
-  * `aggegator` - Implementation of the news aggregator.
+  * `aggregator` - Implementation of the news aggregator.
   * `mobile-api` - Implementation of mobile api service.
   * `storage` - Persistence implementation. Think cache, db, memory etc.
 
