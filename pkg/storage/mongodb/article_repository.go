@@ -82,21 +82,23 @@ func (pr *ArticleRepository) GetArticles(ctx context.Context, offset, count int,
 	if coll == nil {
 		return nil, fmt.Errorf("unable to get collection handler for %s", collectionArticles)
 	}
-	filter := bson.D{
-		// {
-		// 	"provider", bson.D{
-		// 		{
-		// 			"$in", bson.A{providers},
-		// 		},
-		// 	},
-		// },
-		// {
-		// 	"category", bson.D{
-		// 		{
-		// 			"$in", bson.A{categories},
-		// 		},
-		// 	},
-		// },
+
+	// A very rudimentary form of query composition - A hack based on how Mongo treats "empty" slices.
+	filter := bson.M{}
+	if len(categories) > 0 || len(providers) > 0 {
+		filter["$and"] = []bson.M{}
+		if len(categories) > 0 {
+			andCategories := bson.M{
+				"categories": bson.M{"$in": categories},
+			}
+			filter["$and"] = append(filter["$and"].([]bson.M), andCategories)
+		}
+		if len(providers) > 0 {
+			andProvider := bson.M{
+				"provider": bson.M{"$in": providers},
+			}
+			filter["$and"] = append(filter["$and"].([]bson.M), andProvider)
+		}
 	}
 	options := options.Find().SetSkip(int64(offset * count)).SetLimit(int64(count))
 
@@ -104,8 +106,8 @@ func (pr *ArticleRepository) GetArticles(ctx context.Context, offset, count int,
 	if err != nil {
 		return nil, errors.Wrap(err, "execute find query")
 	}
-	err = crs.All(ctx, results)
-	if err == nil {
+	err = crs.All(ctx, &results)
+	if err != nil {
 		return nil, errors.Wrap(err, "decode all results")
 	}
 
@@ -117,7 +119,7 @@ func (pr *ArticleRepository) createIndexes() error {
 		Keys:    bson.D{{Key: "guid", Value: 1}},
 		Options: options.Index().SetName("guid").SetUnique(true),
 	}
-	opts := options.CreateIndexes().SetMaxTime(2 * time.Second)
+	opts := options.CreateIndexes().SetMaxTime(60 * time.Second)
 	_, err := pr.database.Collection(collectionArticles).Indexes().CreateOne(context.Background(), models, opts)
 	if err != nil {
 		return errors.Wrap(err, "create article GUID index")

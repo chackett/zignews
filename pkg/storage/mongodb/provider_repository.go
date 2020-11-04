@@ -77,50 +77,59 @@ func (pr *ProviderRepository) GetProviders(ctx context.Context, offset, count in
 		return nil, fmt.Errorf("unable to get collection handler for %s", collectionProviders)
 	}
 
-	filter := bson.D{{}}
+	filter := bson.D{}
 	options := options.Find().SetSkip(int64(offset * count)).SetLimit(int64(count))
 
 	crs, err := coll.Find(ctx, filter, options)
 	if err != nil {
 		return nil, errors.Wrap(err, "execute find query")
 	}
-	err = crs.All(ctx, results)
-	if err == nil {
+	err = crs.All(ctx, &results)
+	if err != nil {
 		return nil, errors.Wrap(err, "decode all results")
 	}
-
-	return nil, nil
+	return results, nil
 }
 
-func (pr *ProviderRepository) bootStrapProviders() {
+func (pr *ProviderRepository) bootStrapProviders() error {
+	existing, err := pr.GetProviders(context.Background(), 0, 9999)
+	if err != nil {
+		return errors.Wrap(err, "get providers")
+	}
+	if len(existing) > 0 {
+		log.Print("Skipping bootstrap providers as providers already exist.")
+		return nil
+	}
 	providers := []storage.Provider{
 		{
 			Type:                 "rss",
 			FeedURL:              "http://feeds.bbci.co.uk/news/uk/rss.xml",
 			Label:                "BBC News UK",
-			PollFrequencySeconds: 10,
+			PollFrequencySeconds: 0,
 		},
 		{
 			Type:                 "rss",
 			FeedURL:              "http://feeds.bbci.co.uk/news/technology/rss.xml",
 			Label:                "BBC News Technology",
-			PollFrequencySeconds: 10,
+			PollFrequencySeconds: 1,
 		},
 		{
 			Type:                 "rss",
 			FeedURL:              "http://feeds.skynews.com/feeds/rss/uk.xml",
 			Label:                "Sky News UK",
-			PollFrequencySeconds: 10,
+			PollFrequencySeconds: 2,
 		},
 		{
 			Type:                 "rss",
 			FeedURL:              "http://feeds.skynews.com/feeds/rss/technology.xml",
 			Label:                "Sky News Technology",
-			PollFrequencySeconds: 10,
+			PollFrequencySeconds: 3,
 		},
 	}
-	_, err := pr.InsertProviders(context.Background(), providers)
+	_, err = pr.InsertProviders(context.Background(), providers)
 	if err != nil {
 		log.Fatal(errors.Wrap(err, "bootstrap providers"))
 	}
+	log.Print("Successfully bootstrapped provider list")
+	return nil
 }
