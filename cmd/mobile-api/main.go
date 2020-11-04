@@ -7,6 +7,7 @@ import (
 	"github.com/caarlos0/env"
 	mobileapi "github.com/chackett/zignews/pkg/mobile-api"
 	"github.com/chackett/zignews/pkg/storage/mongodb"
+	"github.com/nats-io/nats.go"
 	"github.com/pkg/errors"
 )
 
@@ -30,7 +31,12 @@ func main() {
 		log.Fatal(errors.Wrap(err, "create article repository"))
 	}
 
-	svc, err := mobileapi.NewService(artRepo, provRepo)
+	msgBus, err := nats.Connect(config.MsgQueueConn)
+	if err != nil {
+		log.Fatalf("ERROR: Connect to message queue - %s", errors.Wrap(err, "aggregator BuildJobs()").Error())
+	}
+
+	svc, err := mobileapi.NewService(artRepo, provRepo, msgBus)
 	if err != nil {
 		log.Fatal(errors.Wrap(err, "create new mobileapi service"))
 	}

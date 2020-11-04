@@ -4,6 +4,10 @@ A news aggregator service. This tool will aggregate news articles from various s
 
 ## Running the system
 
+To bring up the entire system, use `$ docker-compose up`. The result will be a running aggregator with bootstrapped RSS feeds, which should be available via the API.
+
+View the API documentation as hosted by Postman [here](https://documenter.getpostman.com/view/820576/TVYNYvQ1).
+
 ## High level function
 
 * Aggregator polls list of pre-defined news sites (providers) and saves the article meta data to database.

@@ -133,3 +133,42 @@ func (pr *ProviderRepository) bootStrapProviders() error {
 	log.Print("Successfully bootstrapped provider list")
 	return nil
 }
+
+// GetProvider returns the provider related to the specified `providerID`. Use `IsNotFound()` to determine if item was not found.
+func (pr *ProviderRepository) GetProvider(ctx context.Context, providerID string) (storage.Provider, error) {
+	coll := pr.database.Collection(collectionProviders)
+	if coll == nil {
+		return storage.Provider{}, fmt.Errorf("unable to get collection handler for %s", collectionProviders)
+	}
+
+	objID, err := primitive.ObjectIDFromHex(providerID)
+	if err != nil {
+		return storage.Provider{}, errors.Wrap(err, "ObjectIDFromHex()")
+	}
+
+	filter := bson.M{
+		"_id": objID,
+	}
+	options := options.FindOne()
+	mgResult := coll.FindOne(ctx, filter, options)
+	err = mgResult.Err()
+	if err != nil {
+		return storage.Provider{}, errors.Wrap(err, "execute find query")
+	}
+	if err != nil {
+		if err == mongo.ErrNoDocuments {
+			return storage.Provider{}, storage.ErrNotFound{
+				Message: fmt.Sprintf("No provider found for ID `%s`", providerID),
+			}
+		}
+		return storage.Provider{}, errors.Wrap(err, "execute query")
+	}
+
+	var result storage.Provider
+	err = mgResult.Decode(&result)
+	if err != nil {
+		return storage.Provider{}, errors.Wrap(err, "decode all results")
+	}
+
+	return result, nil
+}

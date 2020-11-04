@@ -4,6 +4,15 @@ import (
 	"context"
 )
 
+// ErrNotFound is returned when an item requested is not found
+type ErrNotFound struct {
+	Message string
+}
+
+func (e ErrNotFound) Error() string {
+	return e.Message
+}
+
 // Provider represents a provider
 type Provider struct {
 	Type                 string `json:"type,omitempty"`
@@ -16,4 +25,5 @@ type Provider struct {
 type ProviderRepository interface {
 	InsertProviders(ctx context.Context, p []Provider) ([]string, error)
 	GetProviders(ctx context.Context, offset, count int) ([]Provider, error)
+	GetProvider(ctx context.Context, providerID string) (Provider, error)
 }

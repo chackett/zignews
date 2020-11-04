@@ -7,4 +7,5 @@ type Config struct {
 	MongoUser     string `env:"MG_USER" envDefault:"root"`
 	MongoPass     string `env:"MG_PASS" envDefault:"password"`
 	DelayJobStart bool   `env:"DELAY_START" envDefault:"false"` // Can be used to delay each job start by a random period of time to prevent load spike.
+	MsgQueueConn  string `env:"MSG_QUEUE" envDefault:"127.0.0.1:4222"`
 }

@@ -37,6 +37,7 @@ func NewJob(label string, provider NewsProvider, articleRepo storage.ArticleRepo
 
 // Start a job
 func (j *Job) Start() error {
+	log.Printf("Starting job: %s", j.Label)
 	for {
 		select {
 		case <-j.chStop:

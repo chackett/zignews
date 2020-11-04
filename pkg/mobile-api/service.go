@@ -3,9 +3,12 @@ package mobileapi
 import (
 	"context"
 	"fmt"
+	"log"
 	"net/url"
 
+	"github.com/chackett/zignews/pkg/events"
 	"github.com/chackett/zignews/pkg/storage"
+	"github.com/nats-io/nats.go"
 	"github.com/pkg/errors"
 )
 
@@ -30,10 +33,11 @@ var SupportedProviders map[string]interface{} = map[string]interface{}{"rss": ni
 type ServiceImpl struct {
 	articles  storage.ArticleRepository
 	providers storage.ProviderRepository
+	msgBus    *nats.Conn
 }
 
 // NewService returns a new instance of the service mobile api service domain logic implementation
-func NewService(articleRepo storage.ArticleRepository, providerRepo storage.ProviderRepository) (*ServiceImpl, error) {
+func NewService(articleRepo storage.ArticleRepository, providerRepo storage.ProviderRepository, msgBus *nats.Conn) (*ServiceImpl, error) {
 	if articleRepo == nil {
 		return nil, errors.New("article repository is nil")
 	}
@@ -43,6 +47,7 @@ func NewService(articleRepo storage.ArticleRepository, providerRepo storage.Prov
 	return &ServiceImpl{
 		articles:  articleRepo,
 		providers: providerRepo,
+		msgBus:    msgBus,
 	}, nil
 }
 
@@ -85,6 +90,11 @@ func (s *ServiceImpl) SaveProvider(ctx context.Context, provider storage.Provide
 	providerID, err := s.providers.InsertProviders(ctx, []storage.Provider{provider})
 	if err != nil {
 		return "", errors.Wrap(err, "save provider to repository")
+	}
+
+	err = s.msgBus.Publish(events.NewProvider, []byte(providerID[0]))
+	if err != nil {
+		log.Printf("ERROR: Publish new provider message to queue - %s", err.Error())
 	}
 
 	return providerID[0], nil

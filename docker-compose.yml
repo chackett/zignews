@@ -4,12 +4,18 @@ services:
         build:
             context: ./
             dockerfile: ./Docker/aggregator/Dockerfile
+        environment:
+            MG_ADDR: zignews-mg:27017
+            MSG_QUEUE: zignews-nats:4222
     mobile-api:
         build:
             context: ./
             dockerfile: ./Docker/mobile-api/Dockerfile
         ports:
             - "8080:8080"
+        environment:
+            MSG_QUEUE: zignews-nats:4222
+            MG_ADDR: zignews-mg:27017
     cache:
         container_name: zignews-redis
         image: redis:6.0.9
@@ -21,6 +27,7 @@ services:
         environment:
             MONGO_INITDB_ROOT_USERNAME: root
             MONGO_INITDB_ROOT_PASSWORD: password
+        command: ["--bind_ip_all"]
         ports:
             - '27017:27017'
         volumes:

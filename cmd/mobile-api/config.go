@@ -7,4 +7,5 @@ type Config struct {
 	MongoUser     string `env:"MG_USER" envDefault:"root"`
 	MongoPass     string `env:"MG_PASS" envDefault:"password"`
 	APIAddress    string `env:"API_ADDR" envDefault:":8080"`
+	MsgQueueConn  string `env:"MSG_QUEUE" envDefault:"127.0.0.1:4222"`
 }
