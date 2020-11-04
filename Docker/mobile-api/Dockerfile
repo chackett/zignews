@@ -1,5 +1,5 @@
 # Start from the latest golang base image
-FROM golang:latest
+FROM golang:1.15.2
 
 # Add Maintainer Info
 LABEL maintainer="Conor Hackett <chackett1@gmail.com>"
