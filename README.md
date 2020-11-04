@@ -32,7 +32,11 @@ Went for a mono repo here that hosts a full "system"
 
 ## Tech stack
 
-* TO DO
+* [Go](https://golang.org/) v1.15.2 - application code
+* [MongoDB](http://mongodb.com/) v3.6 - Persistence
+* [NATS](https://nats.io/) v2.1.8 - Event messaging
+* [Redis](https://redis.io) v6.0.9 - Caching
+* [Docker](https://docker.com) v19.03.13- Containerisation
 
 ## Library choice
 
