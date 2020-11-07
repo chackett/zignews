@@ -1,6 +1,7 @@
 # ZigNews
 
 [![Go Report Card](https://goreportcard.com/badge/github.com/chackett/zignews)](https://goreportcard.com/report/github.com/chackett/zignews)
+[![CircleCI](https://circleci.com/gh/chackett/zignews/tree/master.svg?style=shield)](https://circleci.com/gh/chackett/zignews/tree/master)
 
 A news aggregator service. This tool will aggregate news articles from various sources and provide them to clients via a single API.
 
