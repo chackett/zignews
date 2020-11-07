@@ -110,7 +110,15 @@ func (a *Aggregator) handleNewProvider(m *nats.Msg) {
 	// Build a new instance of provider based on newly received configuration
 	pollingFrequency := time.Duration(time.Second * time.Duration(provider.PollFrequencySeconds))
 	rssp, err := rssprovider.NewRSSProvider(provider.Label, provider.FeedURL, pollingFrequency)
+	if err != nil {
+		fmt.Printf("ERROR: New RSS Provider - %s", err.Error())
+		return
+	}
 	job, err := NewJob(provider.Label, rssp, a.articles)
+	if err != nil {
+		fmt.Printf("ERROR: Create new job - %s", err.Error())
+		return
+	}
 
 	// Lazy way to start a goroutine
 	go func() {
