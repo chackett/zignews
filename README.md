@@ -1,5 +1,7 @@
 # ZigNews
 
+[![Go Report Card](https://goreportcard.com/badge/github.com/chackett/zignews)](https://goreportcard.com/report/github.com/chackett/zignews)
+
 A news aggregator service. This tool will aggregate news articles from various sources and provide them to clients via a single API.
 
 ## Running the system
