@@ -10,5 +10,5 @@ require (
 	github.com/nats-io/nats-server/v2 v2.1.9 // indirect
 	github.com/nats-io/nats.go v1.10.0
 	github.com/pkg/errors v0.9.1
-	go.mongodb.org/mongo-driver v1.4.3
+	go.mongodb.org/mongo-driver v1.4.6
 )
