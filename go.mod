@@ -4,7 +4,7 @@ go 1.15
 
 require (
 	github.com/caarlos0/env v3.5.0+incompatible
-	github.com/go-redis/redis/v8 v8.3.3
+	github.com/go-redis/redis/v8 v8.11.2
 	github.com/gorilla/mux v1.8.0
 	github.com/mmcdole/gofeed v1.1.0
 	github.com/nats-io/nats-server/v2 v2.1.9 // indirect
